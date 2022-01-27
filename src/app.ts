@@ -1,6 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import bodyparser from 'body-parser'
 
 import errorHandler from './models/error'
 import todoRoutes from './routes/todo'
@@ -8,6 +9,8 @@ import authRoutes from './routes/auth'
 
 const app = express()
 dotenv.config({ path: './.env' })
+
+app.use(bodyparser.json())
 
 app.use(
 	cors({
@@ -18,7 +21,8 @@ app.use(
 )
 
 app.use('/todo', todoRoutes)
-app.use('/todo', authRoutes)
+app.use('/auth', authRoutes)
+
 
 app.use((error: errorHandler, req: any, res: any, next: any ) => {
     const status = error.status || 500
