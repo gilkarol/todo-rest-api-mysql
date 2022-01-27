@@ -1,8 +1,31 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
+
+import errorHandler from './models/error'
+import todoRoutes from './routes/todo'
+import authRoutes from './routes/auth'
 
 const app = express()
-dotenv.config({path: './.env'})
+dotenv.config({ path: './.env' })
 
-console.log(process.env.PORT)
+app.use(
+	cors({
+		origin: '*',
+		methods: '*',
+		allowedHeaders: ['Content-Type', 'Authorization'],
+	})
+)
+
+app.use('/todo', todoRoutes)
+app.use('/todo', authRoutes)
+
+app.use((error: errorHandler, req: any, res: any, next: any ) => {
+    const status = error.status || 500
+    const message = error.message
+    res.status(status).json({
+        message: message
+    })
+})
+
 app.listen(process.env.PORT)
