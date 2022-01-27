@@ -1,14 +1,21 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { validationResult } from 'express-validator'
 
 import errorHandler from '../models/error'
 import User from '../models/user'
-import db from '../util/database'
 
 export const signup = async (req: any, res: any, next: any) => {
 	const name: string = req.body.name
 	const email: string = req.body.email
 	const password: string = req.body.password
+
+	const errors = validationResult(req)
+	if (!errors.isEmpty()) {
+		const error: errorHandler = new Error('Email already exists!')
+		error.status = 422
+		throw error
+	}
 
 	try {
 		const hashedPassword = await bcrypt.hash(password, 12)
@@ -25,7 +32,13 @@ export const signup = async (req: any, res: any, next: any) => {
 export const login = async (req: any, res: any, next: any) => {
 	const email: string = req.body.email
 	const password: string = req.body.password
-	
+
+	const errors = validationResult(req)
+	if (!errors.isEmpty()) {
+		const error: errorHandler = new Error('Email already exists!')
+		error.status = 422
+		throw error
+	}
 
 	try {
 		const user = await User.findByEmail(email)
@@ -33,11 +46,15 @@ export const login = async (req: any, res: any, next: any) => {
 		if (!isEqual) {
 			const error: errorHandler = new Error('Passwords does not match!')
 			error.status = 409
-            throw error
+			throw error
 		}
-        const token = jwt.sign({email: email, userId: user[0].id }, process.env.JWT_TOKEN as string, {
-			expiresIn: '1h'
-		})
+		const token = jwt.sign(
+			{ email: email, userId: user[0].id },
+			process.env.JWT_TOKEN as string,
+			{
+				expiresIn: '1h',
+			}
+		)
 		res.status(200).json({
 			message: 'Successfuly logged in!',
 			token: token,
