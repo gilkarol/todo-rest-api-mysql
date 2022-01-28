@@ -20,6 +20,6 @@ export default (req: any, res: any, next: any) => {
 		token,
 		process.env.JWT_TOKEN as string
 	) as Token
-    req.userId = unhashedToken.userId
+    req.userId = unhashedToken.userId as number
 	next()
 }

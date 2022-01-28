@@ -1,6 +1,6 @@
 import db from '../util/database'
 
-interface TodoInterface {
+export interface TodoInterface {
 	id: number
 	text: string
 	creatorId: number
@@ -26,5 +26,9 @@ export default class Todo {
 	static async findById(id: number) {
 		const array = await db.execute('SELECT * FROM todos WHERE id = ?', [id])
 		return array[0] as TodoInterface[]
+	}
+
+	static async updateTodoById(text: string, todoId: number) {
+		return await db.execute('UPDATE todos SET text = ? WHERE id = ?', [text, todoId])
 	}
 }
