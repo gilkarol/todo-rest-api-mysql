@@ -26,9 +26,4 @@ export default class User {
 		])
 		return array[0] as UserInterface[]
 	}
-
-	static async findById(id: number) {
-		const array = await db.execute('SELECT * FROM users WHERE id = ?', [id])
-		return array[0] as UserInterface[]
-	}
 }
