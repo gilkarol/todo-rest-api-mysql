@@ -4,7 +4,7 @@ interface UserInterface {
 	email: string
 	password: string
 	name: string
-    id: number
+	id: number
 }
 export default class User {
 	constructor(
@@ -13,8 +13,8 @@ export default class User {
 		private password: string
 	) {}
 
-	save() {
-		return db.execute(
+	async save() {
+		return await db.execute(
 			'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
 			[this.name, this.email, this.password]
 		)
@@ -24,8 +24,11 @@ export default class User {
 		const array = await db.execute('SELECT * FROM users WHERE email = ?', [
 			email,
 		])
-		const user = array[0] as UserInterface[]
-        console.log(user)
-		return user
+		return array[0] as UserInterface[]
+	}
+
+	static async findById(id: number) {
+		const array = await db.execute('SELECT * FROM users WHERE id = ?', [id])
+		return array[0] as UserInterface[]
 	}
 }
