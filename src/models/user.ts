@@ -24,6 +24,7 @@ export default class User {
 		const array = await db.execute('SELECT * FROM users WHERE email = ?', [
 			email,
 		])
-		return array[0] as UserInterface[]
+		const result = array[0] as UserInterface[]
+		return result[0]
 	}
 }
