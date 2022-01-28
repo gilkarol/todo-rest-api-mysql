@@ -1,8 +1,8 @@
+import { NextFunction, Response } from 'express'
 import errorHandler from '../models/error'
 import Todo from '../models/todo'
-import User from '../models/user'
 
-export const getTodos = async (req: any, res: any, next: any) => {
+export const getTodos = async (req: any, res: Response, next: NextFunction) => {
 	try {
 		const todos = await Todo.fetchAll()
 		res
@@ -13,7 +13,7 @@ export const getTodos = async (req: any, res: any, next: any) => {
 	}
 }
 
-export const getTodo = async (req: any, res: any, next: any) => {
+export const getTodo = async (req: any, res: Response, next: NextFunction) => {
 	const todoId = req.params.todoId
 	try {
 		const todo = await Todo.findById(todoId)
@@ -30,7 +30,7 @@ export const getTodo = async (req: any, res: any, next: any) => {
 	}
 }
 
-export const postTodo = async (req: any, res: any, next: any) => {
+export const postTodo = async (req: any, res: Response, next: NextFunction) => {
 	const todoText: string = req.body.text
 	const userId: number = req.userId
 	try {
@@ -42,7 +42,7 @@ export const postTodo = async (req: any, res: any, next: any) => {
 	}
 }
 
-export const patchTodo = async (req: any, res: any, next: any) => {
+export const patchTodo = async (req: any, res: Response, next: NextFunction) => {
 	const todoId = req.params.todoId
 	const userId = req.userId
 	const todoText = req.body.text
@@ -67,7 +67,7 @@ export const patchTodo = async (req: any, res: any, next: any) => {
 		next(err)
 	}
 }
-export const deleteTodo = async (req: any, res: any, next: any) => {
+export const deleteTodo = async (req: any, res: Response, next: NextFunction) => {
 	const todoId = req.params.todoId
 	const userId = req.userId
 	try {

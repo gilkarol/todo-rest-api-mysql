@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { NextFunction, Response } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import bodyparser from 'body-parser'
@@ -24,7 +24,7 @@ app.use('/todo', todoRoutes)
 app.use('/auth', authRoutes)
 
 
-app.use((error: errorHandler, req: any, res: any, next: any ) => {
+app.use((error: errorHandler, req: any, res: Response, next: NextFunction) => {
     const status = error.status || 500
     const message = error.message
     res.status(status).json({

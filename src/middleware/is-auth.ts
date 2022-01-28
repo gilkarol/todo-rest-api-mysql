@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import errorHandler from '../models/error'
 
@@ -7,7 +8,7 @@ interface Token {
 	iat: number
 }
 
-export default (req: any, res: any, next: any) => {
+export default (req: any, res: Response, next: NextFunction) => {
 	const token = req.get('Authorization').split(' ')[1]
 	try {
 		jwt.verify(token, process.env.JWT_TOKEN as string) as Token
