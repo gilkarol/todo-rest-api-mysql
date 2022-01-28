@@ -13,6 +13,23 @@ export const getTodos = async (req: any, res: any, next: any) => {
 	}
 }
 
+export const getTodo = async (req: any, res: any, next: any) => {
+	const todoId = req.params.todoId
+	try {
+		const todo = await Todo.findById(todoId)
+		if (!todo) {
+			const error: errorHandler = new Error('Todo has not been found!')
+			error.status = 404
+			throw error
+		}
+		res
+			.status(200)
+			.json({ message: 'Todo has been found successfully!', todo: todo })
+	} catch (err) {
+		next(err)
+	}
+}
+
 export const postTodo = async (req: any, res: any, next: any) => {
 	const todoText: string = req.body.text
 	const userId: number = req.userId
