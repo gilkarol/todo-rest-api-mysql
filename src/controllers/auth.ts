@@ -1,19 +1,19 @@
+import { NextFunction, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { validationResult } from 'express-validator'
 
-import errorHandler from '../models/error'
+import { Err, Req } from '../util/interfaces'
 import User from '../models/user'
-import { NextFunction, Request, Response } from 'express'
 
-export const signup = async (req: any, res: Response, next: NextFunction) => {
+export const signup = async (req: Req, res: Response, next: NextFunction) => {
 	const name: string = req.body.name
 	const email: string = req.body.email
 	const password: string = req.body.password
 
 	const errors = validationResult(req)
 	if (!errors.isEmpty()) {
-		const error: errorHandler = new Error('Email already exists!')
+		const error: Err = new Error('Email already exists!')
 		error.status = 422
 		throw error
 	}
@@ -30,13 +30,13 @@ export const signup = async (req: any, res: Response, next: NextFunction) => {
 	}
 }
 
-export const login = async (req: any, res: Response, next: NextFunction) => {
+export const login = async (req: Req, res: Response, next: NextFunction) => {
 	const email: string = req.body.email
 	const password: string = req.body.password
 
 	const errors = validationResult(req)
 	if (!errors.isEmpty()) {
-		const error: errorHandler = new Error('Email already exists!')
+		const error: Err = new Error('Email already exists!')
 		error.status = 422
 		throw error
 	}
@@ -45,7 +45,7 @@ export const login = async (req: any, res: Response, next: NextFunction) => {
 		const user = await User.findByEmail(email)
 		const isEqual = await bcrypt.compare(password, user.password)
 		if (!isEqual) {
-			const error: errorHandler = new Error('Passwords does not match!')
+			const error: Err = new Error('Passwords does not match!')
 			error.status = 409
 			throw error
 		}

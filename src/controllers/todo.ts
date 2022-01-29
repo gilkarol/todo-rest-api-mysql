@@ -1,8 +1,9 @@
 import { NextFunction, Response } from 'express'
-import errorHandler from '../models/error'
-import Todo from '../models/todo'
 
-export const getTodos = async (req: any, res: Response, next: NextFunction) => {
+import Todo from '../models/todo'
+import { Err, Req } from '../util/interfaces'
+
+export const getTodos = async (req: Req, res: Response, next: NextFunction) => {
 	try {
 		const todos = await Todo.fetchAll()
 		res
@@ -13,12 +14,12 @@ export const getTodos = async (req: any, res: Response, next: NextFunction) => {
 	}
 }
 
-export const getTodo = async (req: any, res: Response, next: NextFunction) => {
-	const todoId = req.params.todoId
+export const getTodo = async (req: Req, res: Response, next: NextFunction) => {
+	const todoId: number = +req.params.todoId
 	try {
 		const todo = await Todo.findById(todoId)
 		if (!todo) {
-			const error: errorHandler = new Error('Todo has not been found!')
+			const error: Err = new Error('Todo has not been found!')
 			error.status = 404
 			throw error
 		}
@@ -30,9 +31,9 @@ export const getTodo = async (req: any, res: Response, next: NextFunction) => {
 	}
 }
 
-export const postTodo = async (req: any, res: Response, next: NextFunction) => {
+export const postTodo = async (req: Req, res: Response, next: NextFunction) => {
 	const todoText: string = req.body.text
-	const userId: number = req.userId
+	const userId: number = +req.userId!
 	try {
 		const todo = new Todo(todoText, userId)
 		await todo.save()
@@ -42,20 +43,24 @@ export const postTodo = async (req: any, res: Response, next: NextFunction) => {
 	}
 }
 
-export const patchTodo = async (req: any, res: Response, next: NextFunction) => {
-	const todoId = req.params.todoId
-	const userId = req.userId
-	const todoText = req.body.text
+export const patchTodo = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const todoId: number = +req.params.todoId
+	const userId: number = +req.userId!
+	const todoText: string = req.body.text
 
 	try {
 		const todo = await Todo.findById(todoId)
 		if (!todo) {
-			const error: errorHandler = new Error('Todo has not been found!')
+			const error: Err = new Error('Todo has not been found!')
 			error.status = 404
 			throw error
 		}
 		if (todo.creatorId != userId) {
-			const error: errorHandler = new Error(
+			const error: Err = new Error(
 				'This user is not the creator of todo!'
 			)
 			error.status = 409
@@ -67,18 +72,22 @@ export const patchTodo = async (req: any, res: Response, next: NextFunction) => 
 		next(err)
 	}
 }
-export const deleteTodo = async (req: any, res: Response, next: NextFunction) => {
-	const todoId = req.params.todoId
-	const userId = req.userId
+export const deleteTodo = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const todoId: number = +req.params.todoId
+	const userId: number = +req.userId!
 	try {
 		const todo = await Todo.findById(todoId)
 		if (!todo) {
-			const error: errorHandler = new Error('Todo has not been found!')
+			const error: Err = new Error('Todo has not been found!')
 			error.status = 404
 			throw error
 		}
 		if (todo.creatorId != userId) {
-			const error: errorHandler = new Error('User is not the creator of todo!')
+			const error: Err = new Error('User is not the creator of todo!')
 			error.status = 404
 			throw error
 		}

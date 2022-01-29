@@ -1,19 +1,22 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction,  Response } from 'express'
 import jwt from 'jsonwebtoken'
-import errorHandler from '../models/error'
 
-interface Token {
-	email: string
-	userId: number
-	iat: number
-}
+import { Err, Req, Token } from '../util/interfaces'
 
-export default (req: any, res: Response, next: NextFunction) => {
-	const token = req.get('Authorization').split(' ')[1]
+
+
+
+export default (req: Req, res: Response, next: NextFunction) => {
+	if (!req.get('Authorization')) {
+		const error: Err = new Error('Token not found!')
+		error.status = 401
+		throw error
+	}
+	const token = req.get('Authorization')!.split(' ')[1]
 	try {
 		jwt.verify(token, process.env.JWT_TOKEN as string) as Token
 	} catch (err) {
-		const error: errorHandler = new Error('Not authenticated!')
+		const error: Err = new Error('Not authenticated!')
 		error.status = 401
 		next(error)
 	}
@@ -21,6 +24,6 @@ export default (req: any, res: Response, next: NextFunction) => {
 		token,
 		process.env.JWT_TOKEN as string
 	) as Token
-    req.userId = unhashedToken.userId as number
+    req.userId = +unhashedToken.userId 
 	next()
 }
