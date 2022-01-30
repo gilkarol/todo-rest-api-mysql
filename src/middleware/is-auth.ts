@@ -1,10 +1,7 @@
-import { NextFunction,  Response } from 'express'
+import { NextFunction, Response } from 'express'
 import jwt from 'jsonwebtoken'
 
 import { Err, Req, Token } from '../util/interfaces'
-
-
-
 
 export default (req: Req, res: Response, next: NextFunction) => {
 	if (!req.get('Authorization')) {
@@ -24,6 +21,11 @@ export default (req: Req, res: Response, next: NextFunction) => {
 		token,
 		process.env.JWT_TOKEN as string
 	) as Token
-    req.userId = +unhashedToken.userId 
+	if (!unhashedToken.userId) {
+		const error: Err = new Error('Not authenticated!')
+		error.status = 401
+		throw error
+	}
+	req.userId = +unhashedToken.userId
 	next()
 }
